@@ -28,6 +28,16 @@
                 <div class="crt-flicker"></div>
                 <div class="crt-glare"></div>
 
+                <!-- Panel logowania u góry ekranu -->
+                <div class="auth-status-bar" id="authStatusBar">
+                    <span class="auth-label">PILOT:</span>
+                    <span id="userStatusText" class="cyan">GOSC</span>
+                    <div class="auth-buttons-group">
+                        <button class="bezel-btn btn-auth-small" id="btnAuthAction">LOGOWANIE</button>
+                        <button class="bezel-btn btn-auth-small admin-only" id="btnAdminPanel" style="display: none;">PANEL ADMINA</button>
+                    </div>
+                </div>
+
                 <!-- HUD Gry (Widoczny w trakcie gry i pauzy) -->
                 <div class="hud" id="hud" style="display: none;">
                     <div class="hud-item score-box">
@@ -154,6 +164,102 @@
                         <div class="victory-buttons">
                             <button class="btn-retro glow-green" id="btnVictoryInfinite">GRAJ W NIESKONCZONOSC</button>
                             <button class="btn-retro glow-pink" id="btnMenuFromVic">MENU GLOWNE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Ekran Logowania/Rejestracji (AUTH) -->
+                <div class="screen-overlay" id="authScreen" style="display: none;">
+                    <div class="auth-container">
+                        <div class="auth-tabs">
+                            <button class="auth-tab active" id="tabLogin">ZALOGUJ</button>
+                            <button class="auth-tab" id="tabRegister">REJESTRACJA</button>
+                        </div>
+                        
+                        <!-- Formularz logowania -->
+                        <form id="formLogin" class="auth-form">
+                            <div class="input-group">
+                                <label for="loginUser">NAZWA UZYTKOWNIKA</label>
+                                <input type="text" id="loginUser" required autocomplete="off">
+                            </div>
+                            <div class="input-group">
+                                <label for="loginPass">HASLO</label>
+                                <input type="password" id="loginPass" required>
+                            </div>
+                            <button type="submit" class="btn-retro glow-green btn-auth-submit">ZALOGUJ</button>
+                        </form>
+                        
+                        <!-- Formularz rejestracji -->
+                        <form id="formRegister" class="auth-form" style="display: none;">
+                            <div class="input-group">
+                                <label for="regUser">NAZWA UZYTKOWNIKA</label>
+                                <input type="text" id="regUser" required autocomplete="off">
+                            </div>
+                            <div class="input-group">
+                                <label for="regPass">HASLO</label>
+                                <input type="password" id="regPass" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="regPass2">POTWIERDZ HASLO</label>
+                                <input type="password" id="regPass2" required>
+                            </div>
+                            <button type="submit" class="btn-retro glow-cyan btn-auth-submit">ZAREJESTRUJ</button>
+                        </form>
+                        
+                        <div id="authMessage" class="auth-message"></div>
+                        
+                        <button class="btn-retro glow-pink btn-auth-back" id="btnBackToMenu">POWROT</button>
+                    </div>
+                </div>
+
+                <!-- 8. Ekran Panelu Administratora (ADMIN_PANEL) -->
+                <div class="screen-overlay" id="adminPanelScreen" style="display: none;">
+                    <div class="admin-container">
+                        <h2 class="neon-text glow-green">KONSOLA ADMINA</h2>
+                        <p class="admin-subtitle">USTAWIENIA TRYBU DEBUGOWANIA</p>
+                        
+                        <div class="admin-grid">
+                            <div class="admin-option">
+                                <span class="option-label">TRYB DEBUGOWANIA</span>
+                                <label class="retro-switch">
+                                    <input type="checkbox" id="dbgToggleEnabled">
+                                    <span class="retro-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="admin-option">
+                                <span class="option-label">WAVE STARTOWY</span>
+                                <input type="number" class="dbg-num-input" id="dbgStartWave" min="1" max="20" value="1">
+                            </div>
+                            
+                            <div class="admin-option">
+                                <span class="option-label">GOD MODE (NIESMIERTELNOSC)</span>
+                                <label class="retro-switch">
+                                    <input type="checkbox" id="dbgToggleGodMode">
+                                    <span class="retro-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="admin-option">
+                                <span class="option-label">NIESKONCZONA WALUTA</span>
+                                <label class="retro-switch">
+                                    <input type="checkbox" id="dbgToggleInfCredits">
+                                    <span class="retro-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="admin-option">
+                                <span class="option-label">AUTO-STRZAL OD POCZATKU</span>
+                                <label class="retro-switch">
+                                    <input type="checkbox" id="dbgToggleAutofire">
+                                    <span class="retro-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="admin-actions">
+                            <button class="btn-retro glow-yellow" id="btnDbgMaxUpgrades">MAX ULEPSZENIA</button>
+                            <button class="btn-retro glow-pink" id="btnBackFromAdmin">POWROT</button>
                         </div>
                     </div>
                 </div>

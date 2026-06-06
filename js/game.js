@@ -31,7 +31,9 @@ export class Game {
             LEVEL_TRANSITION: 'level_transition',
             PAUSED: 'paused',
             GAME_OVER: 'game_over',
-            VICTORY: 'victory'
+            VICTORY: 'victory',
+            AUTH: 'auth',
+            ADMIN_PANEL: 'admin_panel'
         };
         this.currentState = this.states.MENU_START;
 
@@ -81,6 +83,16 @@ export class Game {
             if (e.code === 'Escape') {
                 e.preventDefault();
                 this.togglePause();
+            }
+
+            // Klawisz K - natychmiastowe zniszczenie kosmitów (Tryb Debugowania)
+            if (e.code === 'KeyK') {
+                const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
+                if (dbgEnabled && this.currentState === this.states.PLAYING) {
+                    e.preventDefault();
+                    this.invaders.forEach(inv => inv.isAlive = false);
+                    audio.playExplosion('player');
+                }
             }
         });
 
@@ -170,7 +182,8 @@ export class Game {
     showScreen(screenId) {
         const screens = [
             'menuStartScreen', 'transitionScreen', 'shopScreen', 
-            'pauseScreen', 'gameOverScreen', 'victoryScreen'
+            'pauseScreen', 'gameOverScreen', 'victoryScreen',
+            'authScreen', 'adminPanelScreen'
         ];
         screens.forEach(id => {
             const el = document.getElementById(id);
@@ -187,7 +200,8 @@ export class Game {
     hideAllScreens() {
         const screens = [
             'menuStartScreen', 'transitionScreen', 'shopScreen', 
-            'pauseScreen', 'gameOverScreen', 'victoryScreen'
+            'pauseScreen', 'gameOverScreen', 'victoryScreen',
+            'authScreen', 'adminPanelScreen'
         ];
         screens.forEach(id => {
             document.getElementById(id).style.display = 'none';
@@ -204,10 +218,23 @@ export class Game {
         audio.init();
         this.gameMode = mode;
         this.score = 0;
-        this.credits = 0;
-        this.currentWave = 1;
+        
+        // Odczyt ustawień debugowania
+        const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
+        if (dbgEnabled) {
+            this.credits = localStorage.getItem('dbg_inf_credits') === 'true' ? 9999 : 0;
+            this.currentWave = parseInt(localStorage.getItem('dbg_start_wave')) || 1;
+        } else {
+            this.credits = 0;
+            this.currentWave = 1;
+        }
         
         this.player = new Player();
+        // Auto-strzał od początku
+        if (dbgEnabled && localStorage.getItem('dbg_autofire') === 'true') {
+            this.player.upgrades.autofire = 1;
+        }
+        
         this.projectiles = [];
         this.particles = [];
         
@@ -414,6 +441,12 @@ export class Game {
     }
 
     renderShop() {
+        const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
+        const infCredits = localStorage.getItem('dbg_inf_credits') === 'true';
+        if (dbgEnabled && infCredits) {
+            this.credits = 9999;
+        }
+
         document.getElementById('shopCredits').textContent = `${this.credits} $`;
         const grid = document.getElementById('shopGrid');
         grid.innerHTML = '';
@@ -811,6 +844,18 @@ export class Game {
                     proj.y >= this.player.y && proj.y <= this.player.y + this.player.height) {
 
                     proj.active = false;
+                    
+                    // God Mode w trybie debugowania
+                    const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
+                    const godMode = localStorage.getItem('dbg_god_mode') === 'true';
+                    if (dbgEnabled && godMode) {
+                        audio.playExplosion('hit');
+                        for (let i = 0; i < 4; i++) {
+                            this.particles.push(new Particle(proj.x, proj.y, varColor('--neon-pink', '#ff007f')));
+                        }
+                        return;
+                    }
+
                     this.player.lives--;
                     this.updateHUD();
                     
