@@ -273,7 +273,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         await renderUserTable();
                         updateAuthUI();
                     } else {
-                        alert("Błąd: " + res.message);
+                        alert("Blad: " + res.message);
                         btnToggleRole.disabled = false;
                     }
                 });
@@ -288,7 +288,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         if (res.success) {
                             await renderUserTable();
                         } else {
-                            alert("Błąd: " + res.message);
+                            alert("Blad: " + res.message);
                             btnDelete.disabled = false;
                         }
                     }

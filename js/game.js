@@ -8,11 +8,13 @@ import { varColor } from './utils.js';
 import { db } from './firebase.js';
 import { 
     collection, 
-    addDoc, 
     getDocs, 
     query, 
     orderBy, 
-    limit 
+    limit,
+    doc,
+    getDoc,
+    setDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 // --- GŁÓWNA KLASA GRY ---
@@ -265,19 +267,38 @@ export class Game {
     async saveScoreToLeaderboard() {
         const user = JSON.parse(localStorage.getItem('arcade_current_user') || 'null');
         const name = user ? user.username : 'GOSC';
-        
-        const entry = {
-            username: name,
-            wave: this.currentWave,
-            score: this.score,
-            date: Date.now()
-        };
+        const docId = name.toLowerCase();
         
         try {
-            // Zapisujemy wynik do kolekcji leaderboard w Firestore
-            await addDoc(collection(db, 'leaderboard'), entry);
+            const leaderboardDocRef = doc(db, 'leaderboard', docId);
             
-            // Kompatybilność wsteczna z starym systemem high score
+            // Sprawdzamy dotychczasowy najlepszy wynik dla tego pilota/goscia
+            const docSnap = await getDoc(leaderboardDocRef);
+            let shouldSave = true;
+            
+            if (docSnap.exists()) {
+                const existingEntry = docSnap.data();
+                // Zapisujemy tylko jeśli nowy wynik jest wyższy
+                if (this.score <= existingEntry.score) {
+                    shouldSave = false;
+                }
+            }
+            
+            if (shouldSave) {
+                const entry = {
+                    username: name,
+                    wave: this.currentWave,
+                    score: this.score,
+                    date: Date.now()
+                };
+                
+                await setDoc(leaderboardDocRef, entry);
+                console.log(`Saved new high score for ${name}: ${this.score}`);
+            } else {
+                console.log(`Score ${this.score} is not higher than existing record for ${name}.`);
+            }
+            
+            // Kompatybilność wsteczna z starym systemem high score (localStorage)
             if (this.score > this.highScore) {
                 this.highScore = this.score;
                 localStorage.setItem('arcade_highscore', this.highScore);
