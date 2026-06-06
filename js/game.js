@@ -85,10 +85,11 @@ export class Game {
                 this.togglePause();
             }
 
-            // Klawisz K - natychmiastowe zniszczenie kosmitów (Tryb Debugowania)
+            // Klawisz K - natychmiastowe zniszczenie kosmitów (dostępny dla admina)
             if (e.code === 'KeyK') {
-                const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
-                if (dbgEnabled && this.currentState === this.states.PLAYING) {
+                const sessionUser = JSON.parse(localStorage.getItem('arcade_current_user') || 'null');
+                const isAdmin = sessionUser && sessionUser.role === 'admin';
+                if (isAdmin && this.currentState === this.states.PLAYING) {
                     e.preventDefault();
                     this.invaders.forEach(inv => inv.isAlive = false);
                     audio.playExplosion('player');
@@ -220,18 +221,12 @@ export class Game {
         this.score = 0;
         
         // Odczyt ustawień debugowania
-        const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
-        if (dbgEnabled) {
-            this.credits = localStorage.getItem('dbg_inf_credits') === 'true' ? 9999 : 0;
-            this.currentWave = parseInt(localStorage.getItem('dbg_start_wave')) || 1;
-        } else {
-            this.credits = 0;
-            this.currentWave = 1;
-        }
+        this.credits = localStorage.getItem('dbg_inf_credits') === 'true' ? 9999 : 0;
+        this.currentWave = parseInt(localStorage.getItem('dbg_start_wave')) || 1;
         
         this.player = new Player();
         // Auto-strzał od początku
-        if (dbgEnabled && localStorage.getItem('dbg_autofire') === 'true') {
+        if (localStorage.getItem('dbg_autofire') === 'true') {
             this.player.upgrades.autofire = 1;
         }
         
@@ -441,9 +436,8 @@ export class Game {
     }
 
     renderShop() {
-        const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
         const infCredits = localStorage.getItem('dbg_inf_credits') === 'true';
-        if (dbgEnabled && infCredits) {
+        if (infCredits) {
             this.credits = 9999;
         }
 
@@ -846,9 +840,8 @@ export class Game {
                     proj.active = false;
                     
                     // God Mode w trybie debugowania
-                    const dbgEnabled = localStorage.getItem('dbg_enabled') === 'true';
                     const godMode = localStorage.getItem('dbg_god_mode') === 'true';
-                    if (dbgEnabled && godMode) {
+                    if (godMode) {
                         audio.playExplosion('hit');
                         for (let i = 0; i < 4; i++) {
                             this.particles.push(new Particle(proj.x, proj.y, varColor('--neon-pink', '#ff007f')));

@@ -40,7 +40,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const btnDbgJumpWave = document.getElementById('btnDbgJumpWave');
 
     // Kontrolki debugowania
-    const dbgToggleEnabled = document.getElementById('dbgToggleEnabled');
     const dbgStartWave = document.getElementById('dbgStartWave');
     const dbgToggleGodMode = document.getElementById('dbgToggleGodMode');
     const dbgToggleInfCredits = document.getElementById('dbgToggleInfCredits');
@@ -68,26 +67,25 @@ window.addEventListener('DOMContentLoaded', () => {
             btnUserAdminPanel.style.display = 'none';
             if (btnPauseDebugPanel) btnPauseDebugPanel.style.display = 'none';
             
-            // Wyłącz tryb debugowania po wylogowaniu
-            localStorage.setItem('dbg_enabled', 'false');
-            if (dbgToggleEnabled) dbgToggleEnabled.checked = false;
+            // Wyłącz ulepszenia debugowania po wylogowaniu
+            localStorage.removeItem('dbg_enabled');
+            localStorage.setItem('dbg_god_mode', 'false');
+            localStorage.setItem('dbg_inf_credits', 'false');
+            localStorage.setItem('dbg_autofire', 'false');
+            localStorage.setItem('dbg_start_wave', '1');
+            if (dbgToggleGodMode) dbgToggleGodMode.checked = false;
+            if (dbgToggleInfCredits) dbgToggleInfCredits.checked = false;
+            if (dbgToggleAutofire) dbgToggleAutofire.checked = false;
+            if (dbgStartWave) dbgStartWave.value = '1';
         }
     }
 
     // Inicjalne ładowanie stanu przycisków debugowania z localStorage
     function initDebugUI() {
-        if (dbgToggleEnabled) dbgToggleEnabled.checked = localStorage.getItem('dbg_enabled') === 'true';
         if (dbgStartWave) dbgStartWave.value = localStorage.getItem('dbg_start_wave') || '1';
         if (dbgToggleGodMode) dbgToggleGodMode.checked = localStorage.getItem('dbg_god_mode') === 'true';
         if (dbgToggleInfCredits) dbgToggleInfCredits.checked = localStorage.getItem('dbg_inf_credits') === 'true';
         if (dbgToggleAutofire) dbgToggleAutofire.checked = localStorage.getItem('dbg_autofire') === 'true';
-    }
-
-    // Dodanie nasłuchiwania na zmiany kontrolek debugowania
-    if (dbgToggleEnabled) {
-        dbgToggleEnabled.addEventListener('change', (e) => {
-            localStorage.setItem('dbg_enabled', e.target.checked);
-        });
     }
     if (dbgStartWave) {
         dbgStartWave.addEventListener('change', (e) => {
