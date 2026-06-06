@@ -14,7 +14,11 @@ export class Invader {
         this.animFrame = 0;
         
         // Zróżnicowane HP, punkty oraz poziomy obronne kosmitów
-        if (type === 'squid') {
+        if (type === 'red') {
+            this.points = 40;
+            this.maxHp = 4;
+            this.hp = 4;
+        } else if (type === 'squid') {
             this.points = 30;
             this.maxHp = 3;
             this.hp = 3;
@@ -31,7 +35,12 @@ export class Invader {
 
     // Dynamiczna zmiana koloru w zależności od pozostałego zdrowia kosmity (wizualna informacja dla gracza!)
     getColor() {
-        if (this.type === 'squid') {
+        if (this.type === 'red') {
+            if (this.hp === 4) return varColor('--neon-red', '#ff3333'); // Jasna czerwień
+            if (this.hp === 3) return '#cc2424'; // Średnia czerwień
+            if (this.hp === 2) return '#991818'; // Ciemna czerwień
+            return '#660f0f'; // Bardzo ciemna czerwień (uszkodzony)
+        } else if (this.type === 'squid') {
             if (this.hp === 3) return varColor('--neon-cyan', '#00f3ff'); // Jasny błękit
             if (this.hp === 2) return '#00a8e8'; // Średni błękit
             return '#005f8f'; // Ciemny błękit (uszkodzony)

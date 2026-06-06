@@ -294,8 +294,18 @@ export class Game {
                 type = (row <= 2) ? 'squid' : 'crab'; // Fala 8: 3 rzędy błękitnych
             } else if (this.currentWave === 9) {
                 type = (row <= 3) ? 'squid' : 'crab'; // Fala 9: 4 rzędy błękitnych
+            } else if (this.currentWave === 10) {
+                type = 'squid'; // Fala 10: wszystkie 5 rzędów to błękitne statki Squid (3 HP)
+            } else if (this.currentWave === 11) {
+                type = (row === 0) ? 'red' : 'squid'; // Fala 11: 1 rząd czerwonych (4 HP) na górze
+            } else if (this.currentWave === 12) {
+                type = (row <= 1) ? 'red' : 'squid'; // Fala 12: 2 rzędy czerwonych
+            } else if (this.currentWave === 13) {
+                type = (row <= 2) ? 'red' : 'squid'; // Fala 13: 3 rzędy czerwonych
+            } else if (this.currentWave === 14) {
+                type = (row <= 3) ? 'red' : 'squid'; // Fala 14: 4 rzędy czerwonych
             } else {
-                type = 'squid'; // Fala 10+: wszystkie 5 rzędów to najsilniejsze błękitne statki Squid (3 HP)!
+                type = 'red'; // Fala 15+: wszystkie 5 rzędów to najsilniejsze czerwone statki (4 HP)!
             }
 
             for (let col = 0; col < 11; col++) {
