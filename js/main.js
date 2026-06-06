@@ -1,5 +1,5 @@
 import { Game } from './game.js';
-import { initAuth, getCurrentUser, login, register, logout, isAdmin, isTester, getUsersList, updateUserRole, deleteUser } from './auth.js';
+import { initAuth, getCurrentUser, login, register, logout, isAdmin, isTester, isOwner, getUsersList, updateUserRole, deleteUser } from './auth.js';
 import { audio } from './audio.js';
 
 let game;
@@ -53,7 +53,9 @@ window.addEventListener('DOMContentLoaded', () => {
             userStatusText.textContent = user.username.toUpperCase();
             
             // Kolor statusu pilota na obudowie w zależności od roli
-            if (user.role === 'admin') {
+            if (user.role === 'owner') {
+                userStatusText.className = 'pink';
+            } else if (user.role === 'admin') {
                 userStatusText.className = 'green';
             } else if (user.role === 'tester') {
                 userStatusText.className = 'yellow';
@@ -63,15 +65,15 @@ window.addEventListener('DOMContentLoaded', () => {
             
             btnAuthAction.textContent = 'WYLOGUJ';
             
-            // Przycisk PANEL ADMINA na obudowie widoczny tylko dla admina
-            if (user.role === 'admin') {
+            // Przycisk PANEL ADMINA na obudowie widoczny dla admina i ownera
+            if (isAdmin()) {
                 btnUserAdminPanel.style.display = 'inline-block';
             } else {
                 btnUserAdminPanel.style.display = 'none';
             }
             
-            // Tryb debugowania w grze dostępny dla admina i testera
-            if (user.role === 'admin' || user.role === 'tester') {
+            // Tryb debugowania w grze dostępny dla testera, admina i ownera
+            if (isTester()) {
                 if (btnPauseDebugPanel) btnPauseDebugPanel.style.display = 'block';
             } else {
                 if (btnPauseDebugPanel) btnPauseDebugPanel.style.display = 'none';
@@ -287,7 +289,9 @@ window.addEventListener('DOMContentLoaded', () => {
             
             const tdRole = document.createElement('td');
             tdRole.textContent = acc.role.toUpperCase();
-            if (acc.role === 'admin') {
+            if (acc.role === 'owner') {
+                tdRole.className = 'pink';
+            } else if (acc.role === 'admin') {
                 tdRole.className = 'green';
             } else if (acc.role === 'tester') {
                 tdRole.className = 'yellow';
@@ -298,89 +302,107 @@ window.addEventListener('DOMContentLoaded', () => {
             const tdActions = document.createElement('td');
             
             if (acc.username.toLowerCase() !== currentUser.username.toLowerCase()) {
-                const btnPromote = document.createElement('button');
-                btnPromote.className = 'bezel-btn btn-auth-small glow-cyan';
-                btnPromote.style.marginRight = '5px';
-                
-                const btnDemote = document.createElement('button');
-                btnDemote.className = 'bezel-btn btn-auth-small glow-pink';
-                btnDemote.style.marginRight = '5px';
-                
-                if (acc.role === 'user') {
-                    btnPromote.textContent = 'PROMUJ (TESTER)';
-                    btnPromote.addEventListener('click', async () => {
-                        btnPromote.disabled = true;
-                        const res = await updateUserRole(acc.username, 'tester');
-                        if (res.success) {
-                            await renderUserTable();
-                            updateAuthUI();
-                        } else {
-                            alert("Blad: " + res.message);
-                            btnPromote.disabled = false;
-                        }
-                    });
-                    tdActions.appendChild(btnPromote);
-                } else if (acc.role === 'tester') {
-                    btnDemote.textContent = 'DEGRADUJ (USER)';
-                    btnDemote.addEventListener('click', async () => {
-                        btnDemote.disabled = true;
-                        const res = await updateUserRole(acc.username, 'user');
-                        if (res.success) {
-                            await renderUserTable();
-                            updateAuthUI();
-                        } else {
-                            alert("Blad: " + res.message);
-                            btnDemote.disabled = false;
-                        }
-                    });
+                // Zabezpieczenie: nikt nie może dotykać konta ownera (głównego właściciela)
+                if (acc.role === 'owner') {
+                    tdActions.textContent = '(GLOWNY WLASCICIEL)';
+                    tdActions.style.color = 'var(--neon-pink)';
+                } 
+                // Zabezpieczenie: admin nie może modyfikować ani usuwać innych adminów
+                else if (currentUser.role === 'admin' && acc.role === 'admin') {
+                    tdActions.textContent = '(ADMIN)';
+                    tdActions.style.color = 'var(--neon-green)';
+                } 
+                else {
+                    const btnPromote = document.createElement('button');
+                    btnPromote.className = 'bezel-btn btn-auth-small glow-cyan';
+                    btnPromote.style.marginRight = '5px';
                     
-                    btnPromote.textContent = 'PROMUJ (ADMIN)';
-                    btnPromote.addEventListener('click', async () => {
-                        btnPromote.disabled = true;
-                        const res = await updateUserRole(acc.username, 'admin');
-                        if (res.success) {
-                            await renderUserTable();
-                            updateAuthUI();
-                        } else {
-                            alert("Blad: " + res.message);
-                            btnPromote.disabled = false;
-                        }
-                    });
+                    const btnDemote = document.createElement('button');
+                    btnDemote.className = 'bezel-btn btn-auth-small glow-pink';
+                    btnDemote.style.marginRight = '5px';
                     
-                    tdActions.appendChild(btnDemote);
-                    tdActions.appendChild(btnPromote);
-                } else if (acc.role === 'admin') {
-                    btnDemote.textContent = 'DEGRADUJ (TESTER)';
-                    btnDemote.addEventListener('click', async () => {
-                        btnDemote.disabled = true;
-                        const res = await updateUserRole(acc.username, 'tester');
-                        if (res.success) {
-                            await renderUserTable();
-                            updateAuthUI();
-                        } else {
-                            alert("Blad: " + res.message);
-                            btnDemote.disabled = false;
+                    if (acc.role === 'user') {
+                        btnPromote.textContent = 'PROMUJ (TESTER)';
+                        btnPromote.addEventListener('click', async () => {
+                            btnPromote.disabled = true;
+                            const res = await updateUserRole(acc.username, 'tester');
+                            if (res.success) {
+                                await renderUserTable();
+                                updateAuthUI();
+                            } else {
+                                alert("Blad: " + res.message);
+                                btnPromote.disabled = false;
+                            }
+                        });
+                        tdActions.appendChild(btnPromote);
+                    } else if (acc.role === 'tester') {
+                        btnDemote.textContent = 'DEGRADUJ (USER)';
+                        btnDemote.addEventListener('click', async () => {
+                            btnDemote.disabled = true;
+                            const res = await updateUserRole(acc.username, 'user');
+                            if (res.success) {
+                                await renderUserTable();
+                                updateAuthUI();
+                            } else {
+                                alert("Blad: " + res.message);
+                                btnDemote.disabled = false;
+                            }
+                        });
+                        
+                        // Tylko owner może promować do roli admina
+                        if (currentUser.role === 'owner') {
+                            btnPromote.textContent = 'PROMUJ (ADMIN)';
+                            btnPromote.addEventListener('click', async () => {
+                                btnPromote.disabled = true;
+                                const res = await updateUserRole(acc.username, 'admin');
+                                if (res.success) {
+                                    await renderUserTable();
+                                    updateAuthUI();
+                                } else {
+                                    alert("Blad: " + res.message);
+                                    btnPromote.disabled = false;
+                                }
+                            });
+                            tdActions.appendChild(btnPromote);
                         }
-                    });
-                    tdActions.appendChild(btnDemote);
-                }
-                
-                const btnDelete = document.createElement('button');
-                btnDelete.className = 'bezel-btn btn-auth-small glow-pink';
-                btnDelete.textContent = 'USUN';
-                btnDelete.addEventListener('click', async () => {
-                    if (confirm(`Czy na pewno chcesz usunac konto ${acc.username}?`)) {
-                        btnDelete.disabled = true;
-                        const res = await deleteUser(acc.username);
-                        if (res.success) {
-                            await renderUserTable();
-                        } else {
-                            alert("Blad: " + res.message);
-                            btnDelete.disabled = false;
+                        
+                        tdActions.appendChild(btnDemote);
+                    } else if (acc.role === 'admin') {
+                        // Tylko owner może degradować adminów
+                        if (currentUser.role === 'owner') {
+                            btnDemote.textContent = 'DEGRADUJ (TESTER)';
+                            btnDemote.addEventListener('click', async () => {
+                                btnDemote.disabled = true;
+                                const res = await updateUserRole(acc.username, 'tester');
+                                if (res.success) {
+                                    await renderUserTable();
+                                    updateAuthUI();
+                                } else {
+                                    alert("Blad: " + res.message);
+                                    btnDemote.disabled = false;
+                                }
+                            });
+                            tdActions.appendChild(btnDemote);
                         }
                     }
-                });
-                tdActions.appendChild(btnDelete);
+                    
+                    const btnDelete = document.createElement('button');
+                    btnDelete.className = 'bezel-btn btn-auth-small glow-pink';
+                    btnDelete.textContent = 'USUN';
+                    btnDelete.addEventListener('click', async () => {
+                        if (confirm(`Czy na pewno chcesz usunac konto ${acc.username}?`)) {
+                            btnDelete.disabled = true;
+                            const res = await deleteUser(acc.username);
+                            if (res.success) {
+                                await renderUserTable();
+                            } else {
+                                alert("Blad: " + res.message);
+                                btnDelete.disabled = false;
+                            }
+                        }
+                    });
+                    tdActions.appendChild(btnDelete);
+                }
             } else {
                 tdActions.textContent = '(TY)';
                 tdActions.style.color = '#558855';

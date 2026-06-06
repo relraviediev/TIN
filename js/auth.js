@@ -142,21 +142,30 @@ export function getCurrentUser() {
 }
 
 /**
- * Sprawdza, czy zalogowany użytkownik jest administratorem (synchronicznie).
- * @returns {boolean} True jeśli admin
+ * Sprawdza, czy zalogowany użytkownik jest właścicielem (synchronicznie).
+ * @returns {boolean} True jeśli owner
  */
-export function isAdmin() {
+export function isOwner() {
     const user = getCurrentUser();
-    return user !== null && user.role === 'admin';
+    return user !== null && user.role === 'owner';
 }
 
 /**
- * Sprawdza, czy zalogowany użytkownik ma uprawnienia debugera/testera (admin lub tester).
- * @returns {boolean} True jeśli admin lub tester
+ * Sprawdza, czy zalogowany użytkownik jest administratorem lub właścicielem (synchronicznie).
+ * @returns {boolean} True jeśli admin lub owner
+ */
+export function isAdmin() {
+    const user = getCurrentUser();
+    return user !== null && (user.role === 'admin' || user.role === 'owner');
+}
+
+/**
+ * Sprawdza, czy zalogowany użytkownik ma uprawnienia debugera/testera (owner, admin lub tester).
+ * @returns {boolean} True jeśli owner, admin lub tester
  */
 export function isTester() {
     const user = getCurrentUser();
-    return user !== null && (user.role === 'admin' || user.role === 'tester');
+    return user !== null && (user.role === 'admin' || user.role === 'owner' || user.role === 'tester');
 }
 
 /**
