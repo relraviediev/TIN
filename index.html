@@ -302,10 +302,14 @@
             
             <!-- Panel autoryzacji na obudowie -->
             <div class="cabinet-auth-section" id="authStatusBar">
-                <span class="auth-label">PILOT:</span>
-                <span id="userStatusText" class="cyan">GOSC</span>
-                <button class="bezel-btn btn-auth-small" id="btnAuthAction">LOGOWANIE</button>
-                <button class="bezel-btn btn-auth-small admin-only" id="btnUserAdminPanel" style="display: none;">ZARZADZAJ KONTAMI</button>
+                <div class="auth-status-info">
+                    <span class="auth-label">PILOT:</span>
+                    <span id="userStatusText" class="cyan">GOSC</span>
+                </div>
+                <div class="auth-status-buttons">
+                    <button class="bezel-btn btn-auth-small" id="btnAuthAction">LOGOWANIE</button>
+                    <button class="bezel-btn btn-auth-small admin-only" id="btnUserAdminPanel" style="display: none;">ZARZADZAJ KONTAMI</button>
+                </div>
             </div>
             
             <button class="bezel-btn" id="btnPauseBezel" title="Pauza">

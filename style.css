@@ -886,9 +886,21 @@ body {
 /* ================= SYSTEM KONT I ADMIN PANEL ================= */
 .cabinet-auth-section {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     font-size: 0.55rem;
+}
+
+.auth-status-info {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.auth-status-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .auth-label {
@@ -1007,7 +1019,7 @@ body {
 /* ADMIN PANEL SCREEN */
 .admin-container {
     width: 100%;
-    max-width: 550px;
+    max-width: 650px;
     background-color: rgba(10, 15, 10, 0.96);
     border: 3px solid #1f3d1f;
     border-radius: 15px;
@@ -1017,6 +1029,14 @@ body {
     gap: 20px;
     box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
     margin-bottom: 25px;
+}
+
+.admin-container .neon-text {
+    font-size: clamp(1rem, 3.2cqw, 1.3rem);
+    letter-spacing: 0.2cqw;
+    line-height: 1.3;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .admin-subtitle {
@@ -1216,12 +1236,12 @@ input:checked + .retro-slider:before {
 .user-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.5rem;
+    font-size: clamp(0.45rem, 1.2cqw, 0.65rem);
     text-align: left;
 }
 
 .user-table th, .user-table td {
-    padding: 12px 10px;
+    padding: clamp(8px, 1.5cqw, 12px) clamp(6px, 1.2cqw, 10px);
     border-bottom: 1px solid #1f3d1f;
 }
 
@@ -1240,6 +1260,11 @@ input:checked + .retro-slider:before {
 
 .user-table tr:hover {
     background-color: rgba(57, 255, 20, 0.05);
+}
+
+.user-table .btn-auth-small {
+    font-size: clamp(0.4rem, 1cqw, 0.55rem);
+    padding: clamp(4px, 0.8cqw, 8px) clamp(6px, 1.2cqw, 12px);
 }
 
 .dbg-wave-selector-group {
