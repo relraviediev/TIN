@@ -220,15 +220,22 @@ export class Game {
         this.gameMode = mode;
         this.score = 0;
         
-        // Odczyt ustawień debugowania
-        this.credits = localStorage.getItem('dbg_inf_credits') === 'true' ? 9999 : 0;
-        this.currentWave = parseInt(localStorage.getItem('dbg_start_wave')) || 1;
+        // Resetowanie ułatwień debugowania przy starcie nowej rozgrywki
+        localStorage.setItem('dbg_god_mode', 'false');
+        localStorage.setItem('dbg_inf_credits', 'false');
+        localStorage.setItem('dbg_autofire', 'false');
+        localStorage.setItem('dbg_start_wave', '1');
+        
+        this.credits = 0;
+        this.currentWave = 1;
         
         this.player = new Player();
-        // Auto-strzał od początku
-        if (localStorage.getItem('dbg_autofire') === 'true') {
-            this.player.upgrades.autofire = 1;
-        }
+        
+        // Ukryj przyciski autoryzacji na obudowie w trakcie gry
+        const btnAuth = document.getElementById('btnAuthAction');
+        const btnAdmin = document.getElementById('btnUserAdminPanel');
+        if (btnAuth) btnAuth.style.display = 'none';
+        if (btnAdmin) btnAdmin.style.display = 'none';
         
         this.projectiles = [];
         this.particles = [];
@@ -398,6 +405,10 @@ export class Game {
             } else {
                 this.hideAllScreens();
             }
+        } else if (this.currentState === this.states.ADMIN_PANEL) {
+            // Powrót z trybu debugowania do pauzy
+            this.currentState = this.states.PAUSED;
+            this.showScreen('pauseScreen');
         }
     }
 
@@ -644,6 +655,16 @@ export class Game {
         this.currentState = this.states.MENU_START;
         this.showScreen('menuStartScreen');
         document.getElementById('hud').style.display = 'none';
+        
+        // Przywróć przyciski autoryzacji na obudowie
+        const btnAuth = document.getElementById('btnAuthAction');
+        const btnAdmin = document.getElementById('btnUserAdminPanel');
+        if (btnAuth) btnAuth.style.display = 'inline-block';
+        
+        const user = JSON.parse(localStorage.getItem('arcade_current_user') || 'null');
+        if (btnAdmin) {
+            btnAdmin.style.display = (user && user.role === 'admin') ? 'inline-block' : 'none';
+        }
         
         this.ctx.clearRect(0, 0, this.virtualW, this.virtualH);
     }

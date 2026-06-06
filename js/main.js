@@ -285,6 +285,7 @@ window.addEventListener('DOMContentLoaded', () => {
         btnPauseDebugPanel.addEventListener('click', () => {
             if (isAdmin()) {
                 initDebugUI();
+                game.currentState = game.states.ADMIN_PANEL;
                 game.showScreen('adminPanelScreen');
             }
         });
@@ -293,6 +294,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Powrót z trybu debugowania wraca do PAUZY
     if (btnBackFromAdmin) {
         btnBackFromAdmin.addEventListener('click', () => {
+            game.currentState = game.states.PAUSED;
             game.showScreen('pauseScreen');
         });
     }
@@ -308,7 +310,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 
                 audio.playLevelUp();
                 game.initWaveGameplay(); // Uruchamia wybraną falę natychmiast
-                game.showScreen('pauseScreen'); // Wraca do ekranu pauzy (gra jest gotowa w tle)
+                game.currentState = game.states.PAUSED; // Wymuś stan PAUSED, aby gra nie ruszyła w tle!
+                game.showScreen('pauseScreen'); // Pokazuje ekran pauzy
                 
                 const originalText = btnDbgJumpWave.textContent;
                 btnDbgJumpWave.textContent = 'TELEPORT!';
