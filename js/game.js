@@ -5,6 +5,15 @@ import { Invader } from './invader.js';
 import { Particle } from './particle.js';
 import { Projectile } from './projectile.js';
 import { varColor } from './utils.js';
+import { db } from './firebase.js';
+import { 
+    collection, 
+    addDoc, 
+    getDocs, 
+    query, 
+    orderBy, 
+    limit 
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 // --- GŁÓWNA KLASA GRY ---
 export class Game {
@@ -210,42 +219,50 @@ export class Game {
         });
     }
 
-    updateLeaderboardUI() {
+    async updateLeaderboardUI() {
         const tbody = document.getElementById('leaderboardBody');
         if (!tbody) return;
         tbody.innerHTML = '';
         
-        const leaderboard = JSON.parse(localStorage.getItem('arcade_leaderboard') || '[]');
-        
-        // Fallback do klasycznych rekordów retro
-        const displayData = leaderboard.length > 0 ? leaderboard : [
-            { username: 'NEO', wave: 20, score: 10000 },
-            { username: 'MTRX', wave: 15, score: 7500 },
-            { username: 'ALF', wave: 10, score: 5000 },
-            { username: 'PILOT', wave: 5, score: 2500 },
-            { username: 'GOSC', wave: 1, score: 100 }
-        ];
-
-        displayData.slice(0, 5).forEach((entry, idx) => {
-            const tr = document.createElement('tr');
+        try {
+            // Pobieramy 5 najlepszych wyników z Firestore
+            const q = query(collection(db, 'leaderboard'), orderBy('score', 'desc'), limit(5));
+            const querySnapshot = await getDocs(q);
             
-            // Kolorowanie pozycji liderów w stylu retro
-            let userClass = 'cyan';
-            if (idx === 0) userClass = 'yellow';
-            else if (idx === 1) userClass = 'green';
-            else if (idx === 2) userClass = 'pink';
+            if (querySnapshot.empty) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="4" style="color: var(--neon-pink); padding: 2cqw 0; font-size: 1.2cqw;">BRAK ZAPISANYCH WYNIKOW</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
 
-            tr.innerHTML = `
-                <td>${idx + 1}</td>
-                <td class="${userClass}">${entry.username.toUpperCase()}</td>
-                <td>${entry.wave}</td>
-                <td class="yellow">${String(entry.score).padStart(5, '0')}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+            let idx = 0;
+            querySnapshot.forEach((doc) => {
+                const entry = doc.data();
+                const tr = document.createElement('tr');
+                
+                // Kolorowanie pozycji liderów w stylu retro
+                let userClass = 'cyan';
+                if (idx === 0) userClass = 'yellow';
+                else if (idx === 1) userClass = 'green';
+                else if (idx === 2) userClass = 'pink';
+
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td class="${userClass}">${entry.username.toUpperCase()}</td>
+                    <td>${entry.wave}</td>
+                    <td class="yellow">${String(entry.score).padStart(5, '0')}</td>
+                `;
+                tbody.appendChild(tr);
+                idx++;
+            });
+        } catch (err) {
+            console.error("Error loading leaderboard:", err);
+            tbody.innerHTML = `<tr><td colspan="4" style="color: var(--neon-pink); padding: 2cqw 0;">BLAD WCZYTYWANIA DANYCH</td></tr>`;
+        }
     }
 
-    saveScoreToLeaderboard() {
+    async saveScoreToLeaderboard() {
         const user = JSON.parse(localStorage.getItem('arcade_current_user') || 'null');
         const name = user ? user.username : 'GOSC';
         
@@ -256,19 +273,20 @@ export class Game {
             date: Date.now()
         };
         
-        let leaderboard = JSON.parse(localStorage.getItem('arcade_leaderboard') || '[]');
-        leaderboard.push(entry);
-        leaderboard.sort((a, b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 10);
-        localStorage.setItem('arcade_leaderboard', JSON.stringify(leaderboard));
-        
-        // Kompatybilność wsteczna z starym systemem high score
-        if (this.score > this.highScore) {
-            this.highScore = this.score;
-            localStorage.setItem('arcade_highscore', this.highScore);
+        try {
+            // Zapisujemy wynik do kolekcji leaderboard w Firestore
+            await addDoc(collection(db, 'leaderboard'), entry);
+            
+            // Kompatybilność wsteczna z starym systemem high score
+            if (this.score > this.highScore) {
+                this.highScore = this.score;
+                localStorage.setItem('arcade_highscore', this.highScore);
+            }
+            
+            await this.updateLeaderboardUI();
+        } catch (err) {
+            console.error("Error saving score to leaderboard:", err);
         }
-        
-        this.updateLeaderboardUI();
     }
 
     startGame(mode) {

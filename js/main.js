@@ -1,5 +1,5 @@
 import { Game } from './game.js';
-import { initAuth, getCurrentUser, login, register, logout, isAdmin } from './auth.js';
+import { initAuth, getCurrentUser, login, register, logout, isAdmin, getUsersList, updateUserRole, deleteUser } from './auth.js';
 import { audio } from './audio.js';
 
 let game;
@@ -114,11 +114,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Przycisk Autoryzacji (Logowanie / Wylogowanie)
     if (btnAuthAction) {
-        btnAuthAction.addEventListener('click', () => {
+        btnAuthAction.addEventListener('click', async () => {
             const user = getCurrentUser();
             if (user) {
-                logout();
+                await logout();
                 updateAuthUI();
+                if (game) {
+                    game.updateLeaderboardUI();
+                }
             } else {
                 // Pokaż ekran logowania
                 authMessage.textContent = '';
@@ -160,17 +163,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Obsługa wysłania formularza logowania
     if (formLogin) {
-        formLogin.addEventListener('submit', (e) => {
+        formLogin.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userVal = document.getElementById('loginUser').value.trim();
             const passVal = document.getElementById('loginPass').value;
 
-            const res = login(userVal, passVal);
+            authMessage.textContent = 'Logowanie...';
+            authMessage.className = 'auth-message info';
+
+            const res = await login(userVal, passVal);
             if (res.success) {
                 authMessage.textContent = res.message;
                 authMessage.className = 'auth-message success';
                 setTimeout(() => {
                     updateAuthUI();
+                    if (game) game.updateLeaderboardUI();
                     game.showScreen('menuStartScreen');
                 }, 800);
             } else {
@@ -182,7 +189,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Obsługa wysłania formularza rejestracji
     if (formRegister) {
-        formRegister.addEventListener('submit', (e) => {
+        formRegister.addEventListener('submit', async (e) => {
             e.preventDefault();
             const userVal = document.getElementById('regUser').value.trim();
             const passVal = document.getElementById('regPass').value;
@@ -194,7 +201,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const res = register(userVal, passVal);
+            authMessage.textContent = 'Tworzenie konta...';
+            authMessage.className = 'auth-message info';
+
+            const res = await register(userVal, passVal);
             if (res.success) {
                 authMessage.textContent = res.message;
                 authMessage.className = 'auth-message success';
@@ -212,9 +222,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // --- PANEL ZARZĄDZANIA KONTAMI ---
     if (btnUserAdminPanel) {
-        btnUserAdminPanel.addEventListener('click', () => {
+        btnUserAdminPanel.addEventListener('click', async () => {
             if (isAdmin()) {
-                renderUserTable();
+                await renderUserTable();
                 game.showScreen('userAdminScreen');
             }
         });
@@ -226,10 +236,17 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderUserTable() {
-        const accounts = JSON.parse(localStorage.getItem('arcade_accounts')) || [];
+    async function renderUserTable() {
+        userTableBody.innerHTML = '<tr><td colspan="3" style="color: var(--neon-cyan); padding: 10px 0;">Pobieranie kont z chmury...</td></tr>';
+        
+        const accounts = await getUsersList();
         const currentUser = getCurrentUser();
         userTableBody.innerHTML = '';
+        
+        if (accounts.length === 0) {
+            userTableBody.innerHTML = '<tr><td colspan="3" style="color: var(--neon-pink); padding: 10px 0;">Brak kont w chmurze</td></tr>';
+            return;
+        }
         
         accounts.forEach(acc => {
             const tr = document.createElement('tr');
@@ -248,21 +265,32 @@ window.addEventListener('DOMContentLoaded', () => {
                 btnToggleRole.className = 'bezel-btn btn-auth-small glow-cyan';
                 btnToggleRole.textContent = acc.role === 'admin' ? 'DEGRADUJ' : 'PROMUJ';
                 btnToggleRole.style.marginRight = '5px';
-                btnToggleRole.addEventListener('click', () => {
-                    acc.role = acc.role === 'admin' ? 'user' : 'admin';
-                    localStorage.setItem('arcade_accounts', JSON.stringify(accounts));
-                    renderUserTable();
-                    updateAuthUI();
+                btnToggleRole.addEventListener('click', async () => {
+                    const nextRole = acc.role === 'admin' ? 'user' : 'admin';
+                    btnToggleRole.disabled = true;
+                    const res = await updateUserRole(acc.username, nextRole);
+                    if (res.success) {
+                        await renderUserTable();
+                        updateAuthUI();
+                    } else {
+                        alert("Błąd: " + res.message);
+                        btnToggleRole.disabled = false;
+                    }
                 });
                 
                 const btnDelete = document.createElement('button');
                 btnDelete.className = 'bezel-btn btn-auth-small glow-pink';
                 btnDelete.textContent = 'USUN';
-                btnDelete.addEventListener('click', () => {
+                btnDelete.addEventListener('click', async () => {
                     if (confirm(`Czy na pewno chcesz usunac konto ${acc.username}?`)) {
-                        const updatedAccounts = accounts.filter(a => a.username.toLowerCase() !== acc.username.toLowerCase());
-                        localStorage.setItem('arcade_accounts', JSON.stringify(updatedAccounts));
-                        renderUserTable();
+                        btnDelete.disabled = true;
+                        const res = await deleteUser(acc.username);
+                        if (res.success) {
+                            await renderUserTable();
+                        } else {
+                            alert("Błąd: " + res.message);
+                            btnDelete.disabled = false;
+                        }
                     }
                 });
                 
