@@ -423,130 +423,111 @@ export class Game {
         const configs = {
             1: {
                 name: "PIERWSZY KONTAKT",
-                desc: "Zbadaj anomalie w sektorze Alpha. Lekki szyk zolty.",
-                layout: 'standard',
+                layout: 'wedge',
                 rows: ['octopus', 'octopus', 'octopus']
             },
             2: {
                 name: "ZWIAD NAJEZDZCOW",
-                desc: "Ruszaj w poscig za wrogim zwiadem. Pojawiaja sie rozowe kraby.",
-                layout: 'standard',
-                rows: ['crab', 'octopus', 'octopus', 'octopus']
+                layout: 'v_shape',
+                rows: ['octopus', 'octopus', 'octopus']
             },
             3: {
-                name: "KLIN OFENSYWNY",
-                desc: "Kosmici formuja klin bojowy. Zestrzel ich zanim zejda za nisko.",
-                layout: 'wedge',
-                rows: ['crab', 'crab', 'octopus', 'octopus']
+                name: "ZAGESZCZENIE SZYKU",
+                layout: 'split_column',
+                rows: ['octopus', 'octopus', 'octopus']
             },
             4: {
-                name: "PAS ASTERIDOW",
-                desc: "Wrog kryje sie za pasem asteroid. Bunkry sa bardziej narazone.",
-                layout: 'split_column',
-                rows: ['crab', 'crab', 'octopus', 'octopus']
+                name: "KLIN OFENSYWNY",
+                layout: 'wedge',
+                rows: ['crab', 'octopus', 'octopus', 'octopus']
             },
             5: {
-                name: "MUR GENERATOROW",
-                desc: "Formacja obronna wroga. Skup ogien w jednym punkcie.",
-                layout: 'standard',
-                rows: ['squid', 'crab', 'crab', 'octopus']
+                name: "PAS ASTEROIDOW",
+                layout: 'v_shape',
+                rows: ['crab', 'crab', 'octopus', 'octopus']
             },
             6: {
                 name: "SZACHOWNICA",
-                desc: "Nietypowa formacja ulatwiajaca im uniki. Zachowaj czujnosc.",
                 layout: 'checkerboard',
-                rows: ['squid', 'crab', 'octopus']
+                rows: ['crab', 'crab', 'octopus', 'octopus', 'octopus']
             },
             7: {
-                name: "KOLUMNA SZTURMOWA",
-                desc: "Wrogowie grupuja sie w pionowe kolumny. Strzelaj w szczeliny.",
-                layout: 'columns',
-                rows: ['squid', 'squid', 'crab', 'crab']
+                name: "ROZPROSZENIE",
+                layout: 'staggered',
+                rows: ['crab', 'crab', 'crab', 'octopus', 'octopus']
             },
             8: {
-                name: "LINIA SMIERCI",
-                desc: "Kosmici schodza znacznie nizej. Szybka eliminacja wymagana.",
-                layout: 'standard',
-                rows: ['squid', 'squid', 'crab', 'crab', 'octopus'],
-                descend: 2
+                name: "KOLUMNA SZTURMOWA",
+                layout: 'columns',
+                rows: ['crab', 'crab', 'crab', 'octopus', 'octopus']
             },
             9: {
-                name: "SCIANA SMUTKU",
-                desc: "Pelna formacja bojowa. Ocal bunkry za wszelka cene.",
+                name: "MUR GENERATOROW",
                 layout: 'standard',
-                rows: ['red', 'squid', 'squid', 'crab', 'crab']
+                rows: ['crab', 'crab', 'octopus', 'octopus']
             },
             10: {
                 name: "CZYSTKA CYJANKOWA",
-                desc: "Frakcja blekitnych napastnikow atakuje cala sila.",
-                layout: 'standard',
-                rows: ['squid', 'squid', 'squid', 'squid', 'squid']
+                layout: 'split_column',
+                rows: ['squid', 'squid', 'crab', 'crab', 'octopus']
             },
             11: {
-                name: "CZERWONY SWIT",
-                desc: "Pierwsze uderzenie ciezkich krazownikow klasy RED.",
-                layout: 'standard',
-                rows: ['red', 'red', 'squid', 'squid']
+                name: "FORMACJA W",
+                layout: 'v_shape',
+                rows: ['squid', 'squid', 'crab', 'crab', 'octopus']
             },
             12: {
-                name: "ROZPROSZENIE",
-                desc: "Rozproszony szyk obcych. Trudne cele dla pojedynczego lasera.",
-                layout: 'staggered',
-                rows: ['red', 'red', 'squid', 'squid']
+                name: "SZYK BITEWNY X",
+                layout: 'checkerboard',
+                rows: ['squid', 'squid', 'squid', 'crab', 'crab']
             },
             13: {
-                name: "FORTICA",
-                desc: "Ciezkie jednostki chronione przez zolte miny.",
-                layout: 'standard',
-                rows: ['red', 'red', 'red', 'octopus', 'octopus']
+                name: "KLESZCZE BOJOWE",
+                layout: 'columns',
+                rows: ['squid', 'squid', 'squid', 'crab', 'crab']
             },
             14: {
-                name: "KLESZCZE BITEWNE",
-                desc: "Formacja V-ksztaltna. Atakuja nas z flank.",
-                layout: 'v_shape',
-                rows: ['red', 'red', 'squid', 'squid']
+                name: "FORT KOSMICZNY",
+                layout: 'crown',
+                rows: ['squid', 'squid', 'squid', 'crab', 'crab']
             },
             15: {
-                name: "PIEKIELNY DESANT",
-                desc: "Kosmiczna armada RED. Maksymalna sila ognia.",
+                name: "SCIANA SMUTKU",
                 layout: 'standard',
-                rows: ['red', 'red', 'red', 'red', 'red']
+                rows: ['squid', 'squid', 'squid', 'crab', 'crab']
             },
             16: {
-                name: "DRUZYNA UFO",
-                desc: "Szpiedzy wroga zageszczaja ruch w atmosferze.",
-                layout: 'staggered',
-                rows: ['red', 'red', 'squid', 'squid', 'squid'],
+                name: "CZERWONY SWIT",
+                layout: 'split_column',
+                rows: ['red', 'red', 'squid', 'squid', 'crab'],
                 ufoChanceBoost: true
             },
             17: {
-                name: "KORONA",
-                desc: "Elitarna straza ulozona w ksztalt korony.",
-                layout: 'crown',
-                rows: ['red', 'red', 'red', 'squid']
+                name: "DRUZYNA UFO",
+                layout: 'columns',
+                rows: ['red', 'red', 'squid', 'squid', 'crab'],
+                ufoChanceBoost: true
             },
             18: {
-                name: "BOMBOWCE TAKTYCZNE",
-                desc: "Zmasowany atak eskadr bombowych.",
-                layout: 'columns',
-                rows: ['red', 'red', 'red', 'red']
+                name: "KORONA",
+                layout: 'crown',
+                rows: ['red', 'red', 'squid', 'squid', 'crab']
             },
             19: {
-                name: "PRZEDSWIT KATAKLIZMU",
-                desc: "Ostatnia linia obrony wroga przed statkiem matka.",
-                layout: 'checkerboard',
-                rows: ['red', 'red', 'red', 'red']
+                name: "PIEKIELNY DESANT",
+                layout: 'standard',
+                rows: ['red', 'red', 'squid', 'squid', 'crab'],
+                descend: 2
             },
             20: {
                 name: "STATEK MATKA - BOSS",
-                desc: "Zniszcz flagowy okret kosmitow. Cel: RDZEN GLOWNY.",
+                desc: "BOSS: Uwaga na oslony sektorowe (blokuja 80% obrazen w aktywnej strefie) oraz potrojne skosne lasery! Niszcz pojawiajace sie posilki!",
                 layout: 'boss',
                 rows: []
             }
         };
         return configs[waveNum] || {
             name: `FALA ${waveNum}`,
-            desc: "WALCZ DALEJ PILOCIE!",
             layout: 'standard',
             rows: ['red', 'squid', 'crab', 'octopus']
         };
@@ -625,7 +606,7 @@ export class Game {
         if (this.gameMode === 'campaign') {
             const config = this.getCampaignWaveConfig(this.currentWave);
             title.textContent = `FALA ${this.currentWave}: ${config.name}`;
-            desc.innerHTML = `<span style="color: var(--neon-cyan);">${config.desc}</span>`;
+            desc.innerHTML = config.desc ? `<span style="color: var(--neon-cyan);">${config.desc}</span>` : '';
         } else {
             title.textContent = `FALA ${this.currentWave}`;
             desc.innerHTML = `<span style="color: var(--neon-yellow);">${modTitle}</span><br><span style="font-size: 0.85em; color: #88a;">${modDesc}</span>`;
