@@ -363,16 +363,17 @@ window.addEventListener('DOMContentLoaded', () => {
                     tdActions.style.color = 'var(--neon-green)';
                 } 
                 else {
+                    const actionWrapper = document.createElement('div');
+                    actionWrapper.className = 'table-actions';
+                    
                     const btnPromote = document.createElement('button');
                     btnPromote.className = 'bezel-btn btn-auth-small glow-cyan';
-                    btnPromote.style.marginRight = '5px';
                     
                     const btnDemote = document.createElement('button');
                     btnDemote.className = 'bezel-btn btn-auth-small glow-pink';
-                    btnDemote.style.marginRight = '5px';
                     
                     if (acc.role === 'user') {
-                        btnPromote.textContent = 'PROMUJ (TESTER)';
+                        btnPromote.textContent = 'AWANS';
                         btnPromote.addEventListener('click', async () => {
                             btnPromote.disabled = true;
                             const res = await updateUserRole(acc.username, 'tester');
@@ -384,9 +385,9 @@ window.addEventListener('DOMContentLoaded', () => {
                                 btnPromote.disabled = false;
                             }
                         });
-                        tdActions.appendChild(btnPromote);
+                        actionWrapper.appendChild(btnPromote);
                     } else if (acc.role === 'tester') {
-                        btnDemote.textContent = 'DEGRADUJ (USER)';
+                        btnDemote.textContent = 'DEGRADUJ';
                         btnDemote.addEventListener('click', async () => {
                             btnDemote.disabled = true;
                             const res = await updateUserRole(acc.username, 'user');
@@ -401,7 +402,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         
                         // Tylko owner może promować do roli admina
                         if (currentUser.role === 'owner') {
-                            btnPromote.textContent = 'PROMUJ (ADMIN)';
+                            btnPromote.textContent = 'AWANS';
                             btnPromote.addEventListener('click', async () => {
                                 btnPromote.disabled = true;
                                 const res = await updateUserRole(acc.username, 'admin');
@@ -413,14 +414,14 @@ window.addEventListener('DOMContentLoaded', () => {
                                     btnPromote.disabled = false;
                                 }
                             });
-                            tdActions.appendChild(btnPromote);
+                            actionWrapper.appendChild(btnPromote);
                         }
                         
-                        tdActions.appendChild(btnDemote);
+                        actionWrapper.appendChild(btnDemote);
                     } else if (acc.role === 'admin') {
                         // Tylko owner może degradować adminów
                         if (currentUser.role === 'owner') {
-                            btnDemote.textContent = 'DEGRADUJ (TESTER)';
+                            btnDemote.textContent = 'DEGRADUJ';
                             btnDemote.addEventListener('click', async () => {
                                 btnDemote.disabled = true;
                                 const res = await updateUserRole(acc.username, 'tester');
@@ -432,7 +433,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                     btnDemote.disabled = false;
                                 }
                             });
-                            tdActions.appendChild(btnDemote);
+                            actionWrapper.appendChild(btnDemote);
                         }
                     }
                     
@@ -451,7 +452,8 @@ window.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     });
-                    tdActions.appendChild(btnDelete);
+                    actionWrapper.appendChild(btnDelete);
+                    tdActions.appendChild(actionWrapper);
                 }
             } else {
                 tdActions.textContent = '(TY)';
@@ -525,10 +527,12 @@ window.addEventListener('DOMContentLoaded', () => {
             
             const tdActions = document.createElement('td');
             
+            const actionWrapper = document.createElement('div');
+            actionWrapper.className = 'table-actions';
+            
             const btnEdit = document.createElement('button');
             btnEdit.className = 'btn-leaderboard-action glow-cyan';
             btnEdit.textContent = 'EDYTUJ';
-            btnEdit.style.marginRight = '5px';
             btnEdit.addEventListener('click', async () => {
                 const waveStr = prompt(`Podaj nowa fale dla ${entry.username}:`, entry.wave);
                 if (waveStr === null) return;
@@ -584,8 +588,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            tdActions.appendChild(btnEdit);
-            tdActions.appendChild(btnDelete);
+            actionWrapper.appendChild(btnEdit);
+            actionWrapper.appendChild(btnDelete);
+            tdActions.appendChild(actionWrapper);
             
             tr.appendChild(tdPilot);
             tr.appendChild(tdWave);
