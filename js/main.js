@@ -103,7 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             userStatusText.textContent = 'GOSC';
             userStatusText.className = 'cyan';
-            btnAuthAction.textContent = 'LOGOWANIE';
+            btnAuthAction.textContent = 'KONTO';
             btnUserAdminPanel.style.display = 'none';
             if (btnToggleManageLeaderboard) btnToggleManageLeaderboard.style.display = 'none';
             if (btnPauseDebugPanel) btnPauseDebugPanel.style.display = 'none';

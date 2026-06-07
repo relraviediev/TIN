@@ -325,8 +325,8 @@ export class Game {
 
     initBunkers() {
         this.bunkers = [];
-        const spacing = 160;
-        const startX = 90;
+        const spacing = 180;
+        const startX = 94;
         for (let i = 0; i < 4; i++) {
             this.bunkers.push(new Bunker(startX + i * spacing, 430));
         }
@@ -379,11 +379,19 @@ export class Game {
 
         if (this.gameMode === 'campaign') {
             const config = getCampaignWaveConfig(this.currentWave);
-            title.textContent = `FALA ${this.currentWave}: ${config.name}`;
-            desc.innerHTML = config.desc ? `<span style="color: var(--neon-cyan);">${config.desc}</span>` : '';
+            if (this.currentWave === 20) {
+                title.textContent = `FALA ${this.currentWave}: ${config.name}`;
+                desc.innerHTML = config.desc ? `<span style="color: var(--neon-cyan);">${config.desc}</span>` : '';
+                desc.style.display = 'block';
+            } else {
+                title.textContent = `FALA ${this.currentWave}`;
+                desc.innerHTML = '';
+                desc.style.display = 'none';
+            }
         } else {
             title.textContent = `FALA ${this.currentWave}`;
             desc.innerHTML = `<span style="color: var(--neon-yellow);">${modTitle}</span><br><span style="font-size: 0.85em; color: #88a;">${modDesc}</span>`;
+            desc.style.display = 'block';
         }
 
         audio.playLevelUp();
