@@ -442,11 +442,11 @@ export class Game {
             this.bossShieldMode = 'center';
             this.bossShieldTimer = 0;
             const bossX = 400 - 80;
-            const bossY = 80;
+            const bossY = 120;
             this.invaders.push(new Invader(bossX, bossY, 'boss', 0));
         } else {
             const startX = 60;
-            const startY = 65 + Math.min(6, this.currentWave - 1) * 10 + descendOffset;
+            const startY = 100 + Math.min(6, this.currentWave - 1) * 10 + descendOffset;
             const colSpacing = 52;
             const rowSpacing = 40;
 
@@ -1355,11 +1355,11 @@ export class Game {
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.font = '10px "Courier New", monospace';
                 this.ctx.textAlign = 'center';
-                this.ctx.fillText("STATEK MATKA - BOSS", 400, 50);
+                this.ctx.fillText("STATEK MATKA - BOSS", 400, 85);
 
                 this.ctx.strokeStyle = '#ffffff';
                 this.ctx.lineWidth = 1;
-                this.ctx.strokeRect(200, 56, 400, 10);
+                this.ctx.strokeRect(200, 92, 400, 10);
 
                 const hpPercent = boss.hp / boss.maxHp;
                 const fillWidth = 400 * hpPercent;
@@ -1377,7 +1377,7 @@ export class Game {
                 this.ctx.fillStyle = hpColor;
                 this.ctx.shadowBlur = 8;
                 this.ctx.shadowColor = hpColor;
-                this.ctx.fillRect(200, 56, fillWidth, 10);
+                this.ctx.fillRect(200, 92, fillWidth, 10);
                 this.ctx.restore();
             }
 
@@ -1415,7 +1415,7 @@ export class Game {
                 this.ctx.fillStyle = modColor;
                 this.ctx.shadowBlur = 6;
                 this.ctx.shadowColor = modColor;
-                this.ctx.fillText(modText, 15, 58);
+                this.ctx.fillText(modText, 15, 88);
                 this.ctx.restore();
             }
 
