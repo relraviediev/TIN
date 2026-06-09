@@ -249,16 +249,21 @@ export class Game {
 
     async saveScoreToLeaderboard() {
         const user = JSON.parse(localStorage.getItem('arcade_current_user') || 'null');
-        const name = user ? user.username : 'GOSC';
+
+        // Zapisz lokalny najlepszy wynik
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('arcade_highscore', this.highScore);
+        }
+
+        // Tylko zalogowani użytkownicy zapisują wyniki w tabeli liderów w chmurze
+        if (!user) {
+            await this.updateLeaderboardUI();
+            return;
+        }
 
         try {
-            await leaderboardService.saveScore(name, this.currentWave, this.score);
-
-            if (this.score > this.highScore) {
-                this.highScore = this.score;
-                localStorage.setItem('arcade_highscore', this.highScore);
-            }
-
+            await leaderboardService.saveScore(user.username, this.currentWave, this.score);
             await this.updateLeaderboardUI();
         } catch (err) {
             console.error("Error saving score to leaderboard:", err);
